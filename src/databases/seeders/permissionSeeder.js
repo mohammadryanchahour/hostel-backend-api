@@ -1,9 +1,13 @@
-// src/db/seeds/seedPermissions.js
-
+const mongoose = require("mongoose");
 const Permission = require("../../models/Permission");
+const dotenv = require("dotenv");
 
-const seedPermissions = async () => {
+dotenv.config();
+
+const PermissionSeeder = async () => {
   try {
+    await mongoose.connect(process.env.MONGO_DB_URI);
+
     const permissions = [
       // Role and Permission Management
       { name: "create-role", slug: "Create a Role" },
@@ -56,7 +60,9 @@ const seedPermissions = async () => {
     console.log("Permissions seeded successfully");
   } catch (error) {
     console.error("Error seeding permissions:", error);
+  } finally {
+    await mongoose.connection.close();
   }
 };
 
-module.exports = seedPermissions;
+module.exports = PermissionSeeder;

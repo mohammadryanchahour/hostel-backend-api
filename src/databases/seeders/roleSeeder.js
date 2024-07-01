@@ -1,15 +1,13 @@
-// src/db/seeds/seedRoles.js
-
 const mongoose = require("mongoose");
 const Role = require("../../models/Role");
 const Permission = require("../../models/Permission");
+const dotenv = require("dotenv");
 
-const seedRoles = async () => {
+dotenv.config();
+
+const RoleSeeder = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGO_DB_URI);
 
     const roles = [
       {
@@ -60,6 +58,7 @@ const seedRoles = async () => {
       const permissions = await Permission.find({
         name: { $in: role.permission_names },
       });
+      console.log("Permissions =>>>", permissions);
 
       const permissionIds = permissions.map((permission) =>
         permission._id.toString()
@@ -86,4 +85,4 @@ const seedRoles = async () => {
   }
 };
 
-module.exports = seedRoles;
+module.exports = RoleSeeder;

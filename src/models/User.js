@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
@@ -16,6 +15,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["admin", "manager"],
       default: "admin",
+    },
+    verification_code: {
+      type: String,
+      default: null,
+    },
+    is_verified: {
+      type: Boolean,
+      default: false,
+    },
+    is_active: {
+      type: Boolean,
+      default: true,
     },
   },
   {

@@ -1,60 +1,41 @@
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
 const { SuccessResponse, ErrorResponse } = require("../helpers/responseHelper");
+const UserService = require("../services/User/UserService");
+const GlobalService = require("../services/Global/GlobalService");
 
 const register = async (req, res) => {
   const { email, password, confirm_password } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    const existingUser = await UserService.getUserByEmail(email);
 
-    if (user) {
-      return ErrorResponse(
-        res,
-        (statusCode = 400),
-        (message = "User already exists")
-      );
+    if (existingUser) {
+      return ErrorResponse(res, 400, "User already exists");
     }
 
     if (password !== confirm_password) {
-      return ErrorResponse(
-        res,
-        (statusCode = 400),
-        (message = "Passwords do not match")
-      );
+      return ErrorResponse(res, 400, "Passwords do not match");
     }
 
-    user = new User({
-      email,
-      password,
-    });
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-
-    const savedData = await user.save();
+    const savedData = await UserService.createUser({ email, password });
 
     const responseData = {
-      token: jwt.sign({ id: savedData.id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-      }),
+      token: GlobalService.generateToken(savedData.id),
       user: savedData,
     };
 
     return SuccessResponse(
       res,
-      (statusCode = 201),
-      (message = "User Registered Successfully!"),
-      (data = responseData)
+      201,
+      "User Registered Successfully!",
+      responseData
     );
   } catch (error) {
     console.error("Error while registering a user:", error);
     return ErrorResponse(
       res,
-      (statusCode = 500),
-      (message =
-        "This is an Internal Server Error. We are working on resolving this issue, please try again later.")
+      500,
+      "This is an Internal Server Error. We are working on resolving this issue, please try again later."
     );
   }
 };
@@ -63,7 +44,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await UserService.getUserByEmail(email);
 
     if (!user) {
       return ErrorResponse(
@@ -73,65 +54,75 @@ const login = async (req, res) => {
       );
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = GlobalService.comparePassword(password, user.password);
 
     if (!isMatch) {
       return ErrorResponse(
         res,
         (statusCode = 400),
-        (message = "Invalid Email or Password.")
+        (message = "Invalid Password.")
       );
     }
 
-    const payload = {
-      user: {
-        id: user.id,
-      },
+    const responseData = {
+      token: GlobalService.generateToken(user.id),
+      user: user,
     };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
+    return SuccessResponse(
+      res,
+      200,
+      "User Logged In Successfully!",
+      responseData
     );
   } catch (error) {
     console.error("Error in user login:", error);
-    res.status(500).json({ message: "Server error" });
+    return ErrorResponse(
+      res,
+      500,
+      "This is an Internal Server Error. We are working on resolving this issue, please try again later."
+    );
   }
 };
 
 const refresh = async (req, res) => {
-  const token = req.header("x-auth-token");
+  const token = req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
-    return res.status(401).json({ message: "No token, authorization denied" });
+    return ErrorResponse(
+      res,
+      (statusCode = 401),
+      (message = "No token, authorization denied!")
+    );
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = GlobalService.verifyToken(token);
 
-    const payload = {
-      user: {
-        id: decoded.user.id,
-      },
+    if (!decoded || decoded.id) {
+      return ErrorResponse(
+        res,
+        (statusCode = 401),
+        (message = "Token is not valid, authorization denied!")
+      );
+    }
+
+    const responseData = {
+      token: GlobalService.generateToken(decoded.id),
     };
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN },
-      (err, newToken) => {
-        if (err) throw err;
-        res.json({ newToken });
-      }
+    return SuccessResponse(
+      res,
+      200,
+      "User Logged In Successfully!",
+      responseData
     );
   } catch (error) {
     console.error("Error in token refresh:", error);
-    res.status(500).json({ message: "Server error" });
+    return ErrorResponse(
+      res,
+      500,
+      "This is an Internal Server Error. We are working on resolving this issue, please try again later."
+    );
   }
 };
 
