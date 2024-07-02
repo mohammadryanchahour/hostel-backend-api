@@ -83,7 +83,7 @@
 
 const express = require("express");
 const router = express.Router();
-const { register, login, refresh } = require("../controllers/authController");
+const { register, login, refresh } = require("../controllers/AuthController");
 
 // Register a new user
 router.post("/register", register);

@@ -1,5 +1,5 @@
 const User = require("../../models/User");
-const GlobalService = require("../Global/GlobalService");
+const { hashPassword } = require("../../helpers/AuthHelper");
 
 class UserService {
   static async getUserByEmail(email) {
@@ -11,7 +11,7 @@ class UserService {
   }
 
   static async createUser({ email, password }) {
-    const hashedPassword = await GlobalService.hashPassword(password);
+    const hashedPassword = await hashPassword(password);
     const newUser = new User({
       email,
       password: hashedPassword,
