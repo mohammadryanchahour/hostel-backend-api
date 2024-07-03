@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("../../models/User");
 const dotenv = require("dotenv");
+const Role = require("../../models/Role");
 
 console.log(dotenv);
 
@@ -13,20 +14,41 @@ const UserSeeder = async () => {
 
     const users = [
       {
-        email: "admin@example.com",
+        email: "owner@example.com",
         password: await bcrypt.hash("admin123", 10),
-        role: "admin",
+        user_type: "owner",
         is_verified: true,
+        role_id: null,
       },
       {
-        email: "manager@example.com",
-        password: await bcrypt.hash("manager123", 10),
-        role: "manager",
+        email: "staff@example.com",
+        password: await bcrypt.hash("staff123", 10),
+        user_type: "staff",
         is_verified: true,
+        role_id: null,
+      },
+      {
+        email: "boarder@example.com",
+        password: await bcrypt.hash("boarder123", 10),
+        user_type: "boarder",
+        is_verified: true,
+        role_id: null,
       },
     ];
 
     for (const userData of users) {
+      if (userData.user_type === "owner") {
+        const role = await Role.findOne({ name: "admin" });
+        userData.role_id = role._id;
+      } else if (userData.user_type === "staff") {
+        const role = await Role.findOne({ name: "manager" });
+        userData.role_id = role._id;
+      } else if (userData.user_type === "boarder") {
+        const role = await Role.findOne({ name: "boarder" });
+        userData.role_id = role._id;
+      } else {
+        throw new Error("Role Not Found");
+      }
       const existingUser = await User.findOne({ email: userData.email });
       if (!existingUser) {
         const newUser = new User(userData);
