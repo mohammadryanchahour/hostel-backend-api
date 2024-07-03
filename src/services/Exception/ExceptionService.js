@@ -47,6 +47,24 @@ class PermissionNotFoundError extends CustomError {
   }
 }
 
+class InvalidOTPError extends CustomError {
+  constructor() {
+    super(400, responseMessages.EMAIL_VERIFICATION_OTP_INVALID);
+  }
+}
+
+class EmailVerificationRequiredError extends CustomError {
+  constructor() {
+    super(400, responseMessages.EMAIL_VERIFICATION_REQUIRED);
+  }
+}
+
+class EmailVerificationFailedError extends CustomError {
+  constructor() {
+    super(400, responseMessages.EMAIL_VERIFICATION_FAILED);
+  }
+}
+
 module.exports = {
   CustomError,
   UserAlreadyExistsError,
@@ -56,4 +74,7 @@ module.exports = {
   InvalidTokenError,
   RoleNotFoundError,
   PermissionNotFoundError,
+  InvalidOTPError,
+  EmailVerificationRequiredError,
+  EmailVerificationFailedError,
 };

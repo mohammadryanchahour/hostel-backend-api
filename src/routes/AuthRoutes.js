@@ -83,7 +83,12 @@
 
 const express = require("express");
 const router = express.Router();
-const { register, login, refresh } = require("../controllers/AuthController");
+const {
+  register,
+  login,
+  refresh,
+  verify,
+} = require("../controllers/AuthController");
 const IsAuthenticated = require("../middlewares/AuthMiddleware");
 
 // Register a new user
@@ -94,5 +99,8 @@ router.post("/login", login);
 
 // Refresh token
 router.post("/refresh", IsAuthenticated, refresh);
+
+// Verify Email
+router.post("/verify-email", verify);
 
 module.exports = router;

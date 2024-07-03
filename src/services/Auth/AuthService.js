@@ -1,10 +1,16 @@
 const UserService = require("../User/UserService");
+const EmailService = require("../Email/EmailService");
+const _ = require("lodash");
+
 const {
   UserAlreadyExistsError,
   PasswordMismatchError,
   UserNotFoundError,
   InvalidPasswordError,
   InvalidTokenError,
+  InvalidOTPError,
+  EmailVerificationRequiredError,
+  EmailVerificationFailedError,
 } = require("../Exception/ExceptionService");
 const {
   generateToken,
@@ -27,10 +33,27 @@ class AuthService {
 
     const savedData = await UserService.createUser({ email, password });
 
+    if (savedData) {
+      const otp = await EmailService.generateOTP();
+      const verificationEmailSent = EmailService.sendVerificationEmail(
+        savedData.email,
+        otp
+      );
+      if (!verificationEmailSent) {
+        throw new EmailVerificationFailedError();
+      } else {
+        savedData.email_verification.otp = otp;
+        savedData.email_verification.sent_at = new Date();
+        await savedData.save();
+      }
+    }
+
+    let keys = ["email", "user_type"];
+
     const response = {
-      access_token: generateToken(savedData.id),
       user: savedData,
     };
+    response.user = _.pick(response.user, keys);
 
     return response;
   }
@@ -41,6 +64,10 @@ class AuthService {
 
     if (!user) {
       throw new UserNotFoundError();
+    }
+
+    if (user.email_verification.is_verified === false) {
+      throw new EmailVerificationRequiredError();
     }
 
     const isMatch = comparePassword(password, user.password);
@@ -66,6 +93,30 @@ class AuthService {
 
     const response = {
       refresh_token: generateToken(decoded.id),
+    };
+
+    return response;
+  }
+
+  static async verifyEmail(payload) {
+    const { email, otp } = payload;
+    const user = await UserService.getUserByEmail(email);
+
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    if (user.email_verification.otp === otp) {
+      user.email_verification.is_verified = true;
+      user.email_verification.otp = null;
+      await user.save();
+    } else {
+      throw new InvalidOTPError();
+    }
+
+    const response = {
+      access_token: generateToken(user.id),
+      user: user,
     };
 
     return response;

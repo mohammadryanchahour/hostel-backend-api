@@ -20,13 +20,10 @@ const userSchema = new mongoose.Schema(
       enum: ["owner", "staff", "boarder"],
       default: "owner",
     },
-    verification_code: {
-      type: String,
-      default: null,
-    },
-    is_verified: {
-      type: Boolean,
-      default: false,
+    email_verification: {
+      otp: { type: String, default: null },
+      sent_at: { type: Date, default: null },
+      is_verified: { type: Boolean, default: false },
     },
     deleted_at: {
       type: Date,

@@ -20,10 +20,6 @@ class RoleService {
 
     return role;
   }
-
-  // static async roleHasPermission(role_id, permission) {
-  //   const role = getRoleById(role_id);
-  // }
 }
 
 module.exports = RoleService;

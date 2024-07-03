@@ -66,8 +66,27 @@ const refresh = async (req, res) => {
   }
 };
 
+const verify = async (req, res) => {
+  try {
+    const response = await AuthService.verifyEmail(req.body);
+    return SuccessResponse(
+      res,
+      200,
+      responseMessages.EMAIL_VERIFIED_SUCCESS,
+      response
+    );
+  } catch (error) {
+    if (error instanceof CustomError) {
+      return ErrorResponse(res, error.statusCode, error.message);
+    } else {
+      return ErrorResponse(res, 500, responseMessages.INTERNAL_SERVER_ERROR);
+    }
+  }
+};
+
 module.exports = {
   register,
   login,
   refresh,
+  verify,
 };
