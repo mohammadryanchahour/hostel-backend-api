@@ -84,6 +84,7 @@
 const express = require("express");
 const router = express.Router();
 const { register, login, refresh } = require("../controllers/AuthController");
+const IsAuthenticated = require("../middlewares/AuthMiddleware");
 
 // Register a new user
 router.post("/register", register);
@@ -92,6 +93,6 @@ router.post("/register", register);
 router.post("/login", login);
 
 // Refresh token
-router.post("/refresh", refresh);
+router.post("/refresh", IsAuthenticated, refresh);
 
 module.exports = router;

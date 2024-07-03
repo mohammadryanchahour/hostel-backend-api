@@ -1,3 +1,4 @@
+const { responseMessages } = require("../../helpers/StaticHelper");
 class CustomError extends Error {
   constructor(statusCode, message) {
     super(message);
@@ -7,31 +8,42 @@ class CustomError extends Error {
 
 class UserAlreadyExistsError extends CustomError {
   constructor() {
-    super(400, "User already exists");
+    super(400, responseMessages.DUPLICATE_USER);
   }
 }
 
 class PasswordMismatchError extends CustomError {
   constructor() {
-    super(400, "Passwords do not match");
+    super(400, responseMessages.PASSWORD_MISMATCH);
   }
 }
 
 class UserNotFoundError extends CustomError {
   constructor() {
-    super(400, "User not found");
+    super(400, responseMessages.USER_NOT_FOUND);
   }
 }
 
 class InvalidPasswordError extends CustomError {
   constructor() {
-    super(400, "Invalid password");
+    super(400, responseMessages.INVALID_PASSWORD);
   }
 }
 
 class InvalidTokenError extends CustomError {
   constructor() {
-    super(401, "Token is invalid, authorization denied!");
+    super(401, responseMessages.TOKEN_INVALID);
+  }
+}
+
+class RoleNotFoundError extends CustomError {
+  constructor() {
+    super(404, responseMessages.ROLE_NOT_FOUND);
+  }
+}
+class PermissionNotFoundError extends CustomError {
+  constructor() {
+    super(404, responseMessages.PERMISSION_NOT_FOUND);
   }
 }
 
@@ -42,4 +54,6 @@ module.exports = {
   UserNotFoundError,
   InvalidPasswordError,
   InvalidTokenError,
+  RoleNotFoundError,
+  PermissionNotFoundError,
 };

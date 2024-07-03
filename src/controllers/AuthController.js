@@ -1,22 +1,23 @@
 const { SuccessResponse, ErrorResponse } = require("../helpers/ResponseHelper");
 const { CustomError } = require("../services/Exception/ExceptionService");
+const { responseMessages } = require("../helpers/StaticHelper");
 const AuthService = require("../services/Auth/AuthService");
 
 const register = async (req, res) => {
   try {
     const response = await AuthService.register(req.body);
 
-    return SuccessResponse(res, 201, "User registered successfully", response);
+    return SuccessResponse(
+      res,
+      201,
+      responseMessages.REGISTRATION_SUCCESS,
+      response
+    );
   } catch (error) {
     if (error instanceof CustomError) {
       return ErrorResponse(res, error.statusCode, error.message);
     } else {
-      console.log("ERROR => ", error);
-      return ErrorResponse(
-        res,
-        500,
-        "This is an Internal Server Error. We are working on resolving this issue, please try again later."
-      );
+      return ErrorResponse(res, 500, responseMessages.INTERNAL_SERVER_ERROR);
     }
   }
 };
@@ -25,17 +26,12 @@ const login = async (req, res) => {
   try {
     const response = await AuthService.login(req.body);
 
-    return SuccessResponse(res, 200, "User Logged In Successfully!", response);
+    return SuccessResponse(res, 200, responseMessages.LOGIN_SUCCESS, response);
   } catch (error) {
     if (error instanceof CustomError) {
       return ErrorResponse(res, error.statusCode, error.message);
     } else {
-      console.log("ERROR => ", error);
-      return ErrorResponse(
-        res,
-        500,
-        "This is an Internal Server Error. We are working on resolving this issue, please try again later."
-      );
+      return ErrorResponse(res, 500, responseMessages.INTERNAL_SERVER_ERROR);
     }
   }
 };
@@ -48,7 +44,7 @@ const refresh = async (req, res) => {
       return ErrorResponse(
         res,
         (statusCode = 401),
-        (message = "No token, authorization denied!")
+        (message = responseMessages.TOKEN_NOT_FOUND)
       );
     }
 
@@ -57,7 +53,7 @@ const refresh = async (req, res) => {
     return SuccessResponse(
       res,
       200,
-      "Access Token Refreshed Successfully!",
+      responseMessages.TOKEN_REFRESHED,
       response
     );
   } catch (error) {
@@ -65,11 +61,7 @@ const refresh = async (req, res) => {
       return ErrorResponse(res, error.statusCode, error.message);
     } else {
       console.log("ERROR => ", error);
-      return ErrorResponse(
-        res,
-        500,
-        "This is an Internal Server Error. We are working on resolving this issue, please try again later."
-      );
+      return ErrorResponse(res, 500, responseMessages.INTERNAL_SERVER_ERROR);
     }
   }
 };
