@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema(
       otp: { type: String, default: null },
       sent_at: { type: Date, default: null },
       is_verified: { type: Boolean, default: false },
+      attempts: {
+        type: Number,
+        default: 0,
+      },
     },
     deleted_at: {
       type: Date,

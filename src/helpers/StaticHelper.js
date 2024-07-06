@@ -18,7 +18,13 @@ const responseMessages = {
   TOKEN_EXPIRED: "Token has expired. Please log in again.",
   TOKEN_INVALID: "Token is invalid, authorization denied!",
   ROLE_NOT_FOUND: "Role not found.",
+  ROLE_FAILED_TO_CREATE: "Failed to Create the Role.",
+  ROLE_CREATE_SUCCESS: "Role created successfully!",
+  ROLE_RETRIEVAL_FAILED:
+    "Failed to retrieve roles at the moment. Try Again Later.",
+  ROLE_RETRIEVAL_SUCCESS: "Role retrieved successfully!",
   PERMISSION_NOT_FOUND: "Permission not found.",
+  INVALID_PERMISSIONS: "Permissions are Invalid.",
   USER_NOT_FOUND: "User not found.",
   DUPLICATE_USER: "User already exists",
   PASSWORD_MISMATCH: "Passwords do not match.",

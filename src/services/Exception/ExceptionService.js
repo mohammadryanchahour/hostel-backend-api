@@ -41,9 +41,28 @@ class RoleNotFoundError extends CustomError {
     super(404, responseMessages.ROLE_NOT_FOUND);
   }
 }
+
+class FailedToCreateRoleError extends CustomError {
+  constructor() {
+    super(404, responseMessages.ROLE_FAILED_TO_CREATE);
+  }
+}
+
+class FailedToRetrieveRoleError extends CustomError {
+  constructor() {
+    super(404, responseMessages.ROLE_RETRIEVAL_FAILED);
+  }
+}
+
 class PermissionNotFoundError extends CustomError {
   constructor() {
     super(404, responseMessages.PERMISSION_NOT_FOUND);
+  }
+}
+
+class InvalidPermissionsError extends CustomError {
+  constructor() {
+    super(404, responseMessages.INVALID_PERMISSIONS);
   }
 }
 
@@ -73,7 +92,10 @@ module.exports = {
   InvalidPasswordError,
   InvalidTokenError,
   RoleNotFoundError,
+  FailedToCreateRoleError,
+  FailedToRetrieveRoleError,
   PermissionNotFoundError,
+  InvalidPermissionsError,
   InvalidOTPError,
   EmailVerificationRequiredError,
   EmailVerificationFailedError,
