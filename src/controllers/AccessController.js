@@ -43,7 +43,7 @@ const getAll = async (req, res) => {
 // Get a role by ID
 const retrieve = async (req, res) => {
   try {
-    const role = req.params.id;
+    const role = req.params.role;
 
     let response;
 

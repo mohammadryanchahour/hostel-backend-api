@@ -1,25 +1,47 @@
-const User = require("../models/User");
+const { ErrorResponse, SuccessResponse } = require("../helpers/ResponseHelper");
+const UserService = require("../services/User/UserService");
+const {
+  UserAlreadyExistsError,
+  PasswordMismatchError,
+  // UserNotFoundError,
+  // InvalidPasswordError,
+  // InvalidTokenError,
+  // InvalidOTPError,
+  // EmailVerificationRequiredError,
+  // EmailVerificationFailedError,
+} = require("../Exception/ExceptionService");
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+    const { email, password, confirm_password } = req.body;
+    if (password !== confirm_password) {
+      throw new PasswordMismatchError();
     }
+    const existingUser = await UserService.getUserByEmail(email);
 
-    const user = new User({
-      name,
-      email,
-      password,
-    });
+    if (existingUser) {
+      throw new UserAlreadyExistsError();
+    }
+    const user = await UserService.createUser({ email, password });
+    let keys = ["email", "user_type"];
 
-    await user.save();
-    res.status(201).json({ message: "User created successfully", user });
+    const response = {
+      user: user,
+    };
+    response.user = _.pick(response.user, keys);
+
+    return SuccessResponse(
+      res,
+      201,
+      responseMessages.REGISTRATION_SUCCESS,
+      response
+    );
   } catch (error) {
-    res.status(500).json({ message: "Error creating user", error });
+    if (error instanceof CustomError) {
+      return ErrorResponse(res, error.statusCode, error.message);
+    } else {
+      return ErrorResponse(res, 500, responseMessages.INTERNAL_SERVER_ERROR);
+    }
   }
 };
 
@@ -80,10 +102,10 @@ const createUser = async (req, res) => {
 //   }
 // };
 
-// module.exports = {
-//   createUser,
-//   getUsers,
-//   getUserById,
-//   updateUser,
-//   deleteUser,
-// };
+module.exports = {
+  createUser,
+  // getUsers,
+  // getUserById,
+  // updateUser,
+  // deleteUser,
+};

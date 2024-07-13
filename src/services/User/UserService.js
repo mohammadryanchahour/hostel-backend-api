@@ -1,6 +1,10 @@
 const User = require("../../models/User");
 const { hashPassword } = require("../../helpers/AuthHelper");
 const RoleService = require("../Access/RoleService");
+const EmailService = require("../Email/EmailService");
+const {
+  EmailVerificationFailedError,
+} = require("../Exception/ExceptionService");
 
 class UserService {
   static async getUserByEmail(email) {
@@ -19,7 +23,21 @@ class UserService {
       password: hashedPassword,
       role_id: role.id,
     });
-    return await newUser.save();
+    const user = await newUser.save();
+    if (user) {
+      const otp = await EmailService.generateOTP();
+      const verificationEmailSent = EmailService.sendVerificationEmail(
+        user.email,
+        otp
+      );
+      if (!verificationEmailSent) {
+        throw new EmailVerificationFailedError();
+      } else {
+        user.email_verification.otp = otp;
+        user.email_verification.sent_at = new Date();
+        return await user.save();
+      }
+    }
   }
 }
 

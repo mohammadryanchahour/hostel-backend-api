@@ -1,5 +1,4 @@
 const UserService = require("../User/UserService");
-const EmailService = require("../Email/EmailService");
 const _ = require("lodash");
 
 const {
@@ -21,32 +20,18 @@ const {
 class AuthService {
   static async register(payload) {
     const { email, password, confirm_password } = payload;
+
+    if (password !== confirm_password) {
+      throw new PasswordMismatchError();
+    }
+
     const existingUser = await UserService.getUserByEmail(email);
 
     if (existingUser) {
       throw new UserAlreadyExistsError();
     }
 
-    if (password !== confirm_password) {
-      throw new PasswordMismatchError();
-    }
-
     const savedData = await UserService.createUser({ email, password });
-
-    if (savedData) {
-      const otp = await EmailService.generateOTP();
-      const verificationEmailSent = EmailService.sendVerificationEmail(
-        savedData.email,
-        otp
-      );
-      if (!verificationEmailSent) {
-        throw new EmailVerificationFailedError();
-      } else {
-        savedData.email_verification.otp = otp;
-        savedData.email_verification.sent_at = new Date();
-        await savedData.save();
-      }
-    }
 
     let keys = ["email", "user_type"];
 
