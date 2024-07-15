@@ -25,6 +25,7 @@ const responseMessages = {
   ROLE_RETRIEVAL_SUCCESS: "Role retrieved successfully!",
   PERMISSION_NOT_FOUND: "Permission not found.",
   INVALID_PERMISSIONS: "Permissions are Invalid.",
+  PERMISSION_RETRIEVAL_SUCCESS: "Permissions retrieved successfully!",
   USER_NOT_FOUND: "User not found.",
   DUPLICATE_USER: "User already exists",
   PASSWORD_MISMATCH: "Passwords do not match.",

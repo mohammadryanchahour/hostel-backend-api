@@ -1,9 +1,10 @@
 const { SuccessResponse, ErrorResponse } = require("../helpers/ResponseHelper");
 const { responseMessages } = require("../helpers/StaticHelper");
+const PermissionService = require("../services/Access/PermissionService");
 const RoleService = require("../services/Access/RoleService");
 
 // Create a new role
-const create = async (req, res) => {
+const createRole = async (req, res) => {
   try {
     const response = await RoleService.createRole(req.body);
     return SuccessResponse(
@@ -22,7 +23,7 @@ const create = async (req, res) => {
 };
 
 // Get all roles
-const getAll = async (req, res) => {
+const getAllRoles = async (req, res) => {
   try {
     const response = await RoleService.getAll();
     return SuccessResponse(
@@ -41,7 +42,7 @@ const getAll = async (req, res) => {
 };
 
 // Get a role by ID
-const retrieve = async (req, res) => {
+const retrieveRole = async (req, res) => {
   try {
     const role = req.params.role;
 
@@ -68,7 +69,7 @@ const retrieve = async (req, res) => {
 };
 
 // Update a role
-const update = async (req, res) => {
+const updateRole = async (req, res) => {
   const { name, permissions } = req.body;
   try {
     const role = await Role.findByIdAndUpdate(
@@ -84,7 +85,7 @@ const update = async (req, res) => {
 };
 
 // Delete a role
-const remove = async (req, res) => {
+const removeRole = async (req, res) => {
   try {
     const role = await Role.findByIdAndDelete(req.params.id);
     if (!role) return res.status(404).json({ error: "Role not found" });
@@ -94,10 +95,51 @@ const remove = async (req, res) => {
   }
 };
 
+const getPermissionsOfRole = async (req, res) => {
+  try {
+    const role = req.params.role;
+
+    const permissions = await PermissionService.getPermissionsForRole(role);
+
+    return SuccessResponse(
+      res,
+      200,
+      responseMessages.PERMISSION_RETRIEVAL_SUCCESS,
+      permissions
+    );
+  } catch (error) {
+    if (error instanceof CustomError) {
+      return ErrorResponse(res, error.statusCode, error.message);
+    } else {
+      return ErrorResponse(res, 500, responseMessages.INTERNAL_SERVER_ERROR);
+    }
+  }
+};
+
+const getAllPermissions = async (req, res) => {
+  try {
+    const permissions = await PermissionService.getAllPermissions();
+    return SuccessResponse(
+      res,
+      200,
+      responseMessages.PERMISSION_RETRIEVAL_SUCCESS,
+      permissions
+    );
+  } catch (error) {
+    if (error instanceof CustomError) {
+      return ErrorResponse(res, error.statusCode, error.message);
+    } else {
+      return ErrorResponse(res, 500, responseMessages.INTERNAL_SERVER_ERROR);
+    }
+  }
+};
+
 module.exports = {
-  create,
-  getAll,
-  retrieve,
-  update,
-  remove,
+  createRole,
+  getAllRoles,
+  retrieveRole,
+  updateRole,
+  removeRole,
+  getPermissionsOfRole,
+  getAllPermissions,
 };

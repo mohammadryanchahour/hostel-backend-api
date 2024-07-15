@@ -60,6 +60,12 @@ class PermissionNotFoundError extends CustomError {
   }
 }
 
+class FailedToRetrievePermissionError extends CustomError {
+  constructor() {
+    super(404, responseMessages.PERMISSION_RETRIEVAL_FAILED);
+  }
+}
+
 class InvalidPermissionsError extends CustomError {
   constructor() {
     super(404, responseMessages.INVALID_PERMISSIONS);
@@ -99,4 +105,5 @@ module.exports = {
   InvalidOTPError,
   EmailVerificationRequiredError,
   EmailVerificationFailedError,
+  FailedToRetrievePermissionError,
 };
