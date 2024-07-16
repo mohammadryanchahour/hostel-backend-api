@@ -8,7 +8,7 @@ const {
   removeRole,
   getPermissionsOfRole,
   getAllPermissions,
-} = require("../controllers/RoleController");
+} = require("../controllers/AccessController");
 const IsAuthenticated = require("../middlewares/AuthMiddleware");
 const HasPermission = require("../middlewares/PermissionMiddleware");
 

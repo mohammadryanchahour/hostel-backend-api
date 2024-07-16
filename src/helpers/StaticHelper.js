@@ -39,6 +39,7 @@ const responseMessages = {
   EMAIL_VERIFICATION_OTP_EXPIRED: "OTP has expired.",
   EMAIL_VERIFICATION_REQUIRED: "Email verification required.",
   EMAIL_VERIFIED_SUCCESS: "Email Verified Successfully.",
+  INVITE_SUCCESS: "Invite sent successfully",
 };
 
 module.exports = {

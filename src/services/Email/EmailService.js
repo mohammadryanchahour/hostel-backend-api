@@ -19,6 +19,19 @@ class EmailService {
 
     await transporter.sendMail(mailOptions);
   }
+
+  static async sendInviteEmail(email, token) {
+    const inviteLink = `${process.env.CLIENT_DOMAIN}/setup-account?token=${token}`;
+
+    const mailOptions = {
+      from: process.env.FROM_EMAIL,
+      to: email,
+      subject: "You are invited to join our platform",
+      text: `Please use the following link to create your account: ${inviteLink}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+  }
 }
 
 module.exports = EmailService;

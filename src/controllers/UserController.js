@@ -1,34 +1,28 @@
-const { ErrorResponse, SuccessResponse } = require("../helpers/ResponseHelper");
+const { SuccessResponse, ErrorResponse } = require("../helpers/ResponseHelper");
+const { CustomError } = require("../services/Exception/ExceptionService");
+const { responseMessages } = require("../helpers/StaticHelper");
 const UserService = require("../services/User/UserService");
-const {
-  UserAlreadyExistsError,
-  PasswordMismatchError,
-  // UserNotFoundError,
-  // InvalidPasswordError,
-  // InvalidTokenError,
-  // InvalidOTPError,
-  // EmailVerificationRequiredError,
-  // EmailVerificationFailedError,
-} = require("../Exception/ExceptionService");
 
-const createUser = async (req, res) => {
+const inviteUser = async (req, res) => {
   try {
-    const { email, password, confirm_password } = req.body;
-    if (password !== confirm_password) {
-      throw new PasswordMismatchError();
-    }
-    const existingUser = await UserService.getUserByEmail(email);
+    const { email, userType, role } = req.body;
+    const response = await UserService.invite(email, userType, role);
 
-    if (existingUser) {
-      throw new UserAlreadyExistsError();
+    return SuccessResponse(res, 200, responseMessages.INVITE_SUCCESS, response);
+  } catch (error) {
+    if (error instanceof CustomError) {
+      return ErrorResponse(res, error.statusCode, error.message);
+    } else {
+      console.log(error.message);
+      return ErrorResponse(res, 500, responseMessages.INTERNAL_SERVER_ERROR);
     }
-    const user = await UserService.createUser({ email, password });
-    let keys = ["email", "user_type"];
+  }
+};
 
-    const response = {
-      user: user,
-    };
-    response.user = _.pick(response.user, keys);
+const setupAccount = async (req, res) => {
+  try {
+    const { token, password, confirmPassword } = req.body;
+    const response = await UserService.setup(token, password, confirmPassword);
 
     return SuccessResponse(
       res,
@@ -45,67 +39,7 @@ const createUser = async (req, res) => {
   }
 };
 
-// const getUsers = async (req, res) => {
-//   try {
-//     const users = await User.find();
-//     res.status(200).json(users);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error retrieving users", error });
-//   }
-// };
-
-// const getUserById = async (req, res) => {
-//   try {
-//     const user = await User.findById(req.params.id);
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-//     res.status(200).json(user);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error retrieving user", error });
-//   }
-// };
-
-// const updateUser = async (req, res) => {
-//   try {
-//     const { name, email, password, role } = req.body;
-
-//     const user = await User.findById(req.params.id);
-
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     user.name = name || user.name;
-//     user.email = email || user.email;
-//     user.password = password ? await bcrypt.hash(password, 10) : user.password;
-//     user.role = role || user.role;
-
-//     const updatedUser = await user.save();
-//     res
-//       .status(200)
-//       .json({ message: "User updated successfully", user: updatedUser });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error updating user", error });
-//   }
-// };
-
-// const deleteUser = async (req, res) => {
-//   try {
-//     const user = await User.findByIdAndDelete(req.params.id);
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-//     res.status(200).json({ message: "User deleted successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error deleting user", error });
-//   }
-// };
-
 module.exports = {
-  createUser,
-  // getUsers,
-  // getUserById,
-  // updateUser,
-  // deleteUser,
+  inviteUser,
+  setupAccount,
 };

@@ -17,21 +17,27 @@ const UserSeeder = async () => {
         email: "owner@example.com",
         password: await bcrypt.hash("admin123", 10),
         user_type: "owner",
-        is_verified: true,
+        email_verification: {
+          is_verified: true,
+        },
         role_id: null,
       },
       {
         email: "staff@example.com",
         password: await bcrypt.hash("staff123", 10),
         user_type: "staff",
-        is_verified: true,
+        email_verification: {
+          is_verified: true,
+        },
         role_id: null,
       },
       {
         email: "boarder@example.com",
         password: await bcrypt.hash("boarder123", 10),
         user_type: "boarder",
-        is_verified: true,
+        email_verification: {
+          is_verified: true,
+        },
         role_id: null,
       },
     ];
