@@ -1,6 +1,7 @@
 const express = require("express");
-const authRoutes = require("./authRoutes");
-const userRoutes = require("./userRoutes");
+const authRoutes = require("./AuthRoutes");
+const accessRoutes = require("./AccessRoutes");
+const userRoutes = require("./UserRoutes");
 // const hostelRoutes = require("./hostelRoutes");
 // const roomRoutes = require("./roomRoutes");
 
@@ -10,6 +11,7 @@ router.get("/", (req, res) => {
   res.send("App is running");
 });
 router.use("/auth", authRoutes);
+router.use("/access", accessRoutes);
 router.use("/users", userRoutes);
 // router.use('/hostels', hostelRoutes);
 // router.use('/rooms', roomRoutes);
