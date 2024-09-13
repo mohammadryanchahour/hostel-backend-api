@@ -2,15 +2,15 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-const UserSeeder = require("./userSeeder");
-const PermissionSeeder = require("./permissionSeeder");
-const RoleSeeder = require("./roleSeeder");
+const UserSeeder = require("./UserSeeder");
+const PermissionSeeder = require("./PermissionSeeder");
+const RoleSeeder = require("./RoleSeeder");
 
 const runSeeders = async () => {
   try {
-    await UserSeeder();
     await PermissionSeeder();
     await RoleSeeder();
+    await UserSeeder();
 
     console.log("All seeders have run successfully.");
   } catch (error) {

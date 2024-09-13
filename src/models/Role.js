@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const roleSchema = new Schema(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     permission_ids: [{ type: String, required: true }],
   },
   { timestamps: true }

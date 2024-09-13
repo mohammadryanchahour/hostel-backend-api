@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
+    role_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null,
+    },
     email: {
       type: String,
       required: true,
@@ -11,22 +15,23 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    role: {
+    user_type: {
       type: String,
-      enum: ["admin", "manager"],
-      default: "admin",
+      enum: ["owner", "staff", "boarder"],
+      default: "owner",
     },
-    verification_code: {
-      type: String,
+    email_verification: {
+      otp: { type: String, default: null },
+      sent_at: { type: Date, default: null },
+      is_verified: { type: Boolean, default: false },
+      attempts: {
+        type: Number,
+        default: 0,
+      },
+    },
+    deleted_at: {
+      type: Date,
       default: null,
-    },
-    is_verified: {
-      type: Boolean,
-      default: false,
-    },
-    is_active: {
-      type: Boolean,
-      default: true,
     },
   },
   {
